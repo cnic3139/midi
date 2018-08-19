@@ -1,4 +1,5 @@
 import { MIDIMessage } from './types';
+import { BPM_MILLISEC_CONVERSION_FACTOR } from './constants';
 
 export class Util {
 
@@ -8,7 +9,7 @@ export class Util {
 	// Given a BPM, returns milliseconds between notes.
 	// Given milliseconds between notes, returns the bpm.
 	public static bpmMsSwap(num: number): number {
-		return 60000 / num;
+		return BPM_MILLISEC_CONVERSION_FACTOR / num;
 	}
 
 	// Sends a 'note off' message to all notes in the high/low boundary
