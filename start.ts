@@ -7,7 +7,6 @@ import { MIDIMessage } from './types';
 // Objects.
 const midi = Midi.getInstance(); // Only allow one instance of midi.
 const filter = new Filter(midi);
-const utilities = new Util(midi);
 midi.open(0);
 
 // Set up constants.
@@ -81,7 +80,7 @@ function nextNote(): void {
 	} else if (nCurrent < low) {
 		nFlip = !nFlip;
 		if (++counter > turns) {
-			utilities.killall(low, high, true);
+			Util.killall(low, high, true);
 		}
 	}
 }
