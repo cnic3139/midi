@@ -8,7 +8,7 @@ export class Filter {
 	private fFlip: boolean;
 	private rFlip: boolean;
 
-	constructor(private readonly Midi) {
+	constructor(private readonly midi) {
 		this.fCurrent = BIT_MIN_7;
 		this.rCurrent = BIT_MAX_7;
 		this.fFlip = true;
