@@ -1,15 +1,16 @@
 // Imports.
-import { Midi } from './midi';
 import { Filter } from './filter';
+import { Midi } from './midi';
+import { Player } from './Player';
+import { MIDIMessage, Note } from './types';
 import { Util } from './util';
-import { MIDIMessage } from './types';
 
 // Objects.
 const midi = Midi.getInstance(); // Only allow one instance of midi.
 const filter = new Filter(midi);
 midi.open(0);
 
-// Set up constants.
+// Set up constants. TODO: Move to constants.ts when finalised
 
 // Bounds.
 const low: number = 57;
@@ -83,6 +84,22 @@ function nextNote(): void {
 			Util.killall(low, high, true);
 		}
 	}
+}
+
+function playScaleUpAndDown(scale: number[], startNote: Note) {
+	const player = new Player(midi);
+	let i: Note = startNote;
+	player.begin();
+	scale.forEach(interval => {
+		//TODO
+		player.play(i);
+		i = Util.incrementNote(i, interval);
+	});
+	scale.reverse().forEach(interval => {
+		//TODO
+		player.play(i);
+	});
+	player.stop();
 }
 
 // Call the start method to start the program.

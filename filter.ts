@@ -1,5 +1,5 @@
-import { MIDIMessage } from './types';
 import { BIT_MAX_7, BIT_MIN_7 } from './constants';
+import { MIDIMessage } from './types';
 
 export class Filter {
 
@@ -8,7 +8,7 @@ export class Filter {
 	private fFlip: boolean;
 	private rFlip: boolean;
 
-	constructor(private readonly midi) {
+	constructor(private readonly Midi) {
 		this.fCurrent = BIT_MIN_7;
 		this.rCurrent = BIT_MAX_7;
 		this.fFlip = true;
