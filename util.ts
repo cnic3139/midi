@@ -1,9 +1,10 @@
 import { Key, MIDIMessage, Note } from './types';
 import { BPM_MILLISEC_CONVERSION_FACTOR, OCTAVE } from './constants';
+import { Midi } from './midi';
 
 export class Util {
 
-	constructor(private readonly midi) {}
+	private static readonly midi = Midi.getInstance();
 
 	public static incrementNote(note: Note, interval: number): Note {
 		const num: number = Util.keyToScaleNo(note.key);
@@ -15,7 +16,8 @@ export class Util {
 				  	  		note.octave,
 			key: Util.scaleNoToKey(
 				num + interval % OCTAVE
-			)
+			),
+			...note
 		};
 	}
 

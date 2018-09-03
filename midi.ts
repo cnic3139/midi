@@ -1,5 +1,6 @@
 import * as midi from 'midi';
 import { MIDIMessage } from './types';
+import { EVENT_MIDI_MESSAGE } from './constants';
 
 export class Midi {
 
@@ -52,6 +53,6 @@ export class Midi {
 
 	private setUpEventHandlers(): void {
 		// Event handler for printing incoming messages to stdout
-		this.input.on('message', (deltaTime: number, message: number[]): void => console.log('Message:', message, 'deltaTime:', deltaTime));
+		this.input.on(EVENT_MIDI_MESSAGE, (deltaTime: number, message: number[]): void => console.log('Message:', message, 'deltaTime:', deltaTime));
 	}
 }

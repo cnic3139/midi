@@ -10,6 +10,7 @@ export interface MIDIMessage {
 export interface Note {
 	octave: number;
 	key: Key;
+	duration: number;
 }
 
 export enum Key {
