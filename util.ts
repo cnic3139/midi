@@ -9,15 +9,28 @@ export class Util {
 	public static incrementNote(note: Note, interval: number): Note {
 		const num: number = Util.keyToScaleNo(note.key);
 		return {
-			octave: num + interval >= OCTAVE ? 
-						++note.octave : 
-						num < 0 ?
-				  			--note.octave : 
-				  	  		note.octave,
+			...note,
+			octave: ((oct) => {
+				if (interval === 0) {
+					return oct;
+				}
+				if (interval > 0) {
+					if (Util.mod(num + interval, OCTAVE) - num < 0) {
+						return oct + 1;
+					} else {
+						return oct;
+					}
+				} else {
+					if (Util.mod(num + interval, OCTAVE) - num > 0) {
+						return oct - 1;
+					} else {
+						return oct;
+					}
+				}
+			})(note.octave),
 			key: Util.scaleNoToKey(
-				num + interval % OCTAVE
-			),
-			...note
+				Util.mod(num + interval, OCTAVE)
+			)
 		};
 	}
 
@@ -31,72 +44,76 @@ export class Util {
 	// Given a Note, returns the pitch number to send via midi
 	public static noteToNum(note: Note): number {
 		// Probably use Util.keyToScaleNo and multiplication by the octave.
-		return null; // TODO
+		return note.octave * OCTAVE + Util.keyToScaleNo(note.key);
+	}
+
+	// Given a number, returns a note with zero duration corresponding to 
+	// that number.
+	public static numToNote(num: number): Note {
+		return {
+			octave: Math.floor(num / OCTAVE),
+			key: Util.mod(num, OCTAVE),
+			duration: 0
+		};
 	}
 
 	// Given a Key, returns it's number in the scale.
-	private static keyToScaleNo(key: Key): number {
+	public static keyToScaleNo(key: Key): number {
 		switch(key) {
-			case Key.A:
-				return 0;
-			case Key.As:
-			case Key.Bb:
-				return 1;
-			case Key.B:
-				return 2;
 			case Key.C:
-				return 3;
-			case Key.Cs:
+				return 0;
 			case Key.Db:
-				return 4;
+				return 1;
 			case Key.D:
-				return 5;
-			case Key.Ds:
+				return 2;
 			case Key.Eb:
-				return 6;
+				return 3;
 			case Key.E:
-				return 7;
+				return 4;
 			case Key.F:
-				return 8;
-			case Key.Fs:
+				return 5;
 			case Key.Gb:
-				return 9
+				return 6;
 			case Key.G:
-				return 10
-			case Key.Gs:
+				return 7;
 			case Key.Ab:
+				return 8;
+			case Key.A:
+				return 9
+			case Key.B:
+				return 10
+			case Key.Bb:
 				return 11;
 		}
 	}
 
 	// Given a number, returns a key in the scale corresponding to that number.
-	// Maps to flat notes unless sharp = true passed in.
-	public static scaleNoToKey(num: number, sharp: boolean = false): Key {
+	public static scaleNoToKey(num: number): Key {
 		switch (num) {
 			case 0:
-				return Key.A;
-			case 1:
-				return sharp ? Key.As : Key.Bb;
-			case 2:
-				return Key.B;
-			case 3:
 				return Key.C;
-			case 4:
-				return sharp ? Key.Cs : Key.Db;
-			case 5:
+			case 1:
+				return Key.Db;
+			case 2:
 				return Key.D;
-			case 6:
-				return sharp ? Key.Ds : Key.Eb;
-			case 7:
+			case 3:
+				return Key.Eb;
+			case 4:
 				return Key.E;
-			case 8:
+			case 5:
 				return Key.F;
-			case 9:
-				return sharp ? Key.Fs : Key.Gb;
-			case 10:
+			case 6:
+				return Key.Gb;
+			case 7:
 				return Key.G;
+			case 8:
+				return Key.Ab;
+			case 9:
+				return Key.A;
+			case 10:
+				return Key.B;
 			case 11:
-				return sharp ? Key.Gs : Key.Ab;
+				return Key.Bb;
 		}
 	}
 
@@ -116,5 +133,10 @@ export class Util {
 		if (quit) {
 			process.exit(0);
 		}
+	}
+
+	// Because Javascript is stupid :/
+	public static mod(a: number, b: number): number {
+		return (((a % b) + b) % b);
 	}
 }
