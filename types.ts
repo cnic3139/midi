@@ -14,21 +14,27 @@ export interface Note {
 }
 
 export enum Key {
-	Ab,
-	A,
-	As,
-	Bb,
-	B,
 	C,
-	Cs,
 	Db,
 	D,
-	Ds,
 	Eb,
 	E,
 	F,
-	Fs,
 	Gb,
 	G,
-	Gs,
+	Ab,
+	A,
+	B,
+	Bb
+}
+
+// the actual instrument
+// should it have an api?
+export interface Instrument {
+	play: () => {}
+}
+
+export interface sequence {
+	notes: Note[];
+	// more than just notes? i.e. loop parmeter tweaks
 }
