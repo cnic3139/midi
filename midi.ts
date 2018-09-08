@@ -21,6 +21,14 @@ export class Midi {
 		return this.instance;
 	}
 
+	public getInput(): any {
+		return Midi.getInstance().input;
+	}
+
+	public getOutput(): any {
+		return Midi.getInstance().output;
+	}
+
 	public open(port: number): void {
 		if (port < 0 || port >= this.output.getPortCount()) {
 			throw new Error('Specified port number out of range.');
