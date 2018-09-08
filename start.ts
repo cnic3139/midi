@@ -2,15 +2,27 @@
 import { Filter } from './filter';
 import { Midi } from './midi';
 import { Player } from './Player';
-import { MIDIMessage, Note } from './types';
+import { Key, MIDIMessage, Note } from './types';
 import { Util } from './util';
+import { majorScale } from './scales';
+
+const readline = require('readline');
 
 // Objects.
 const midi = Midi.getInstance(); // Only allow one instance of midi.
 const filter = new Filter(midi);
-midi.open(0);
+// midi.open(0); // FOR NOW
+
+// There needs to be some sort of user interface to see whilst performing
+// So this can be where that is set up maybe?
 
 // Set up constants. TODO: Move to constants.ts when finalised
+
+// To read user input.
+const rl = readline.createInterface({
+	input: process.stdin,
+	output: process.stdout
+});
 
 // Bounds.
 const low: number = 57;
@@ -35,25 +47,65 @@ let nFlip: boolean = true;
 
 // Start function - This is where the program will commence.
 function start(): void {
-	// Set note on.
-	setInterval(() => on({
-	 	status: 144,
-		data1: nCurrent,
-		data2: 127
-	}), interval);
+	let prompt = 'Choose a midi instrument: \n';
 
-	// Set off, just after note on.
-	setTimeout(() => setInterval(() => off({
-	 	status: 128,
-		data1: nCurrent,
-		data2: 64
-	}), interval), hold);
+	for (let i = 0; i < midi.getOutput().getPortCount(); i++) {
+		prompt += i.toString() + ': ' + midi.getOutput().getPortName(i) + '\n';
+	}
+	
 
-	// Set filter cutoff sweeping.
-	setInterval(() => filter.filterSweep(), hold / 2);
+	rl.question(prompt, (answer: string) => {
+		const port = parseInt(answer);
+		if (port < 0 || port > midi.getOutput().getPortCount()) {
+			throw "Invalid selection";
+		}
+		midi.open(port);
 
-	// Set filter resonance sweeping.
-	setInterval(() => filter.resonanceSweep(), hold / 3);
+		const player = new Player(midi);
+		let note: Note = {
+			octave: 5,
+			key: Key.C,
+			duration: 500
+		};
+
+		player.play(note);
+
+		majorScale.forEach(interval => {
+			note = Util.incrementNote(note, interval);
+			player.play(note);
+		});
+		majorScale.reverse().forEach(interval => {
+			note = Util.incrementNote(note, -interval);
+			player.play(note);
+		});
+
+		player.begin(true);
+
+		player.awaitFinish().then(() => {
+			rl.close();
+			Util.killall(low, high, true);
+		});
+	});
+
+	// // Set note on.
+	// setInterval(() => on({
+	//  	status: 144,
+	// 	data1: nCurrent,
+	// 	data2: 127
+	// }), interval);
+
+	// // Set off, just after note on.
+	// setTimeout(() => setInterval(() => off({
+	//  	status: 128,
+	// 	data1: nCurrent,
+	// 	data2: 64
+	// }), interval), hold);
+
+	// // Set filter cutoff sweeping.
+	// setInterval(() => filter.filterSweep(), hold / 2);
+
+	// // Set filter resonance sweeping.
+	// setInterval(() => filter.resonanceSweep(), hold / 3);
 }
 
 // Send a 'note on' message to the output.
